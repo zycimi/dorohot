@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="doroHot">
+  <title>doroHot 热榜聚合</title>
+  <defs>
+    <linearGradient id="dhTile" x1="18" y1="10" x2="112" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF6A3D"/>
+      <stop offset="1" stop-color="#D40F00"/>
+    </linearGradient>
+    <linearGradient id="dhFlame" x1="50" y1="26" x2="82" y2="98" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#FFE7D6"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="32" fill="url(#dhTile)"/>
+  <path d="M64 9c8 20 28 33 28 57 0 20-12 34-28 34S36 86 36 65c0-14 8-22 14-32 3 8 9 10 12 3-2-8 0-19 2-27Z" fill="url(#dhFlame)"/>
+  <rect x="46" y="80" width="9" height="11" rx="3" fill="#D91100"/>
+  <rect x="59.5" y="71" width="9" height="20" rx="3" fill="#D91100"/>
+  <rect x="73" y="63" width="9" height="28" rx="3" fill="#D91100"/>
+</svg>

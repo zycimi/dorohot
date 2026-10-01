@@ -1,0 +1,96 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+!.env
+.env.*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# ============================================================
+# 本地 / 个人资料：不随开源仓库发布
+# （本机运行所需，保留在工作区；如要发布某几项，从下面删除对应行）
+# ============================================================
+
+# 运行时数据（AI 会话、订阅、首页配置、Cookies 快照等个人数据）
+/data/
+
+# 打包与编辑产生的临时/备份文件
+*.bak
+*.bak-*
+# 本地 pnpm store（由 .npmrc 的 store-dir 指定）
+/.pnpm-store/
+
+# 本机配置文件（AI 模型 / 联网搜索 / 站点 / MemOS 凭据）
+model-config.json
+ai-config.json
+data/site-config.json
+data/memos.json
+# 管理员认证（密码哈希 + 会话密钥，绝不外传）
+data/auth.json
+# MCP 访问令牌（哈希，绝不外传）
+data/mcp.json
+# 远程接入渠道 Webhook / 密钥（绝不外传）
+data/channels.json
+
+# 内部协作文档与任务记录（交接/同步/约定）
+AGENTS.md
+任务同步.md
+交接文档*.md
+AI抓取鉴权方案.md
+
+# 本机自建数据源与运维说明（含本机路径 / systemd 等本机信息）
+使用说明.md
+自建数据源开发与运行手册.md
+dorohot-rule.md
+
+# 旧版规则备份
+dailyhot-rule.md.bak
+
+# 记忆设置等本地备份目录
+/_backup/
+
+# dsh（本机专有入口，已移出仓库；如需恢复见项目外备份）
+/src/lib/dsh.ts
+/src/lib/site-config.ts
+/src/app/dsh/
+/src/app/api/dsh/
+/src/components/Settings/dsh-settings.tsx
+
+# 记忆后端（MemOS，已移出仓库）
+/src/lib/memos.ts
+/src/app/api/ai/memory/

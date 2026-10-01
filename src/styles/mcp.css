@@ -1,0 +1,252 @@
+/*
+ * @Description: MCP 接入设置样式（2026-10-01）
+ */
+
+.mcp-settings .ai-srcinfo {
+  margin-bottom: 14px;
+}
+
+/* 各字段块不允许被内容撑宽（列布局里避免横向溢出） */
+.mcp-settings .ai-field {
+  min-width: 0;
+}
+
+/* 字段之间的纵向节奏：ai-field 本身只有块内 gap，相邻块默认贴在一起 */
+.mcp-settings .ai-field + .ai-field {
+  margin-top: 16px;
+}
+
+/* 总开关行：文字 + 状态徽章 */
+.mcp-switch {
+  margin: 0 0 16px;
+  font-size: 13px;
+}
+.mcp-switch .mcp-badge {
+  margin-left: 2px;
+}
+
+/* 加载骨架（静态，无动画，形状对齐最终内容） */
+.mcp-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mcp-skeleton > span {
+  display: block;
+  height: 34px;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--foreground) 6%, transparent);
+}
+
+/* 时间列等宽数字，避免逐行抖动 */
+.mcp-num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 按下反馈 */
+.mcp-settings .ai-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.mcp-copy {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.mcp-copy code,
+.mcp-copy pre {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--field-background);
+  color: var(--field-foreground);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.mcp-token-new {
+  display: flex;
+  gap: 8px;
+}
+
+.mcp-token-new input {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--field-background);
+  color: var(--field-foreground);
+  font-size: 13px;
+  outline: none;
+}
+
+.mcp-created {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in oklab, var(--success) 45%, var(--border));
+  background: color-mix(in oklab, var(--success) 12%, transparent);
+  border-radius: 10px;
+}
+
+.mcp-created-head {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.mcp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.mcp-table th,
+.mcp-table td {
+  text-align: left;
+  padding: 8px 8px;
+  border-bottom: 1px solid var(--separator);
+  white-space: nowrap;
+}
+
+.mcp-table th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.mcp-table code {
+  font-size: 11px;
+}
+
+.mcp-row-revoked {
+  opacity: 0.6;
+}
+
+.mcp-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.mcp-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.mcp-badge.on {
+  color: var(--success-foreground);
+  background: color-mix(in oklab, var(--success) 24%, transparent);
+}
+
+.mcp-badge.off {
+  color: var(--muted);
+  background: color-mix(in oklab, var(--muted) 18%, transparent);
+}
+
+.mcp-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.mcp-tool {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  min-width: 0;
+  font-size: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-secondary);
+  cursor: pointer;
+}
+
+/* 覆盖 ai.css 的 `.ai-field input { width:100% }`，否则 checkbox 会被拉成整行宽，
+   内容是「checkbox + 说明」的 .mcp-tool 行就会横向溢出自身边框（2026-10-01 修复）。 */
+.mcp-settings .mcp-tool input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  min-width: 0;
+  margin: 2px 0 0;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: none;
+  accent-color: var(--accent);
+}
+
+.mcp-tool-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mcp-tool-main code {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.mcp-tool-desc {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.mcp-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.mcp-table {
+  min-width: 520px;
+}
+
+/* 「提供的能力」分区：置底，与上方接入信息以虚线分隔；标题行含计数与批量按钮 */
+.mcp-cap {
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
+
+.mcp-cap-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.mcp-cap-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* 在 flex + gap 容器里，去掉 .ai-btn.mini 自带的 margin-left，避免间距翻倍 */
+.mcp-settings .mcp-actions .ai-btn.mini,
+.mcp-settings .mcp-cap-actions .ai-btn.mini,
+.mcp-settings .mcp-copy .ai-btn.mini,
+.mcp-settings .mcp-token-new .ai-btn {
+  margin-left: 0;
+}
+
+@media (max-width: 640px) {
+  .mcp-table th:nth-child(4),
+  .mcp-table td:nth-child(4),
+  .mcp-table th:nth-child(5),
+  .mcp-table td:nth-child(5) {
+    display: none;
+  }
+}

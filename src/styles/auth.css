@@ -1,0 +1,252 @@
+/*
+ * @Description: 认证登录 / 管理后台样式（2026-10-01 新增）
+ * 复用 HeroUI 主题变量，亮暗自动适配。
+ */
+
+/* ---------- 登录页 ---------- */
+.auth-wrap {
+  min-height: calc(100vh - var(--site-header-h, 64px) - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 8px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  color: var(--surface-foreground);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 12px 36px rgb(0 0 0 / 0.08);
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-title {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.auth-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 6px 0 18px;
+  line-height: 1.6;
+}
+
+.auth-hint {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--warning) 20%, transparent);
+  border: 1px solid color-mix(in oklab, var(--warning) 45%, transparent);
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.auth-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.auth-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--field-background);
+  color: var(--field-foreground);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.auth-input::placeholder {
+  color: var(--field-placeholder);
+}
+
+.auth-input:focus {
+  border-color: var(--accent);
+}
+
+.auth-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: var(--accent-foreground);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: opacity 0.15s;
+}
+
+.auth-btn:hover {
+  opacity: 0.9;
+}
+
+.auth-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.auth-btn.secondary {
+  background: var(--default);
+  color: var(--default-foreground);
+}
+
+.auth-btn-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.auth-error {
+  font-size: 12px;
+  color: var(--danger);
+  min-height: 16px;
+  margin: 2px 0 8px;
+}
+
+.auth-foot {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.auth-foot a {
+  color: var(--accent);
+}
+
+/* ---------- 管理后台 ---------- */
+.admin-page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 8px 4px 48px;
+}
+
+.admin-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.admin-head h2 {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.admin-user {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.admin-head-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-section {
+  margin: 18px 0 8px;
+}
+
+.admin-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.admin-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.admin-card .k {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.admin-card .v {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 3px;
+  word-break: break-all;
+}
+
+.admin-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.admin-link {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.admin-link:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.admin-link .t {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin-link .d {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.admin-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.admin-panel .auth-field {
+  max-width: 320px;
+}
