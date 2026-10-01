@@ -6,7 +6,7 @@
 </div>
 
 - 上游项目：https://github.com/baiwumm/next-daily-hot
-- 本仓库：doroHot（package 名 `dorohot`，当前版本 `v3.7.2`）
+- 本仓库：doroHot（package 名 `dorohot`，当前版本 `v3.8.0`）
 
 ---
 

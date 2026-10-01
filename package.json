@@ -1,6 +1,6 @@
 {
   "name": "dorohot",
-  "version": "3.7.2",
+  "version": "3.8.0",
   "description": "doroHot —— 自托管的全网热榜聚合站（fork 自 baiwumm/next-daily-hot）",
   "private": true,
   "author": {

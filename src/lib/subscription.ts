@@ -331,9 +331,16 @@ export function nextSendAt(config: SubscriptionConfig, now = Date.now()): number
   return clampToWindow(config, base)
 }
 
-/** @description: 是否到期该发（首次 lastSentAt=0 时，窗口内立即到期，窗口外等下一个窗口；日历/定点模式到点即发，忽略窗口） */
-export function isDue(config: SubscriptionConfig, now = Date.now()): boolean {
-  if (!config.enabled || !config.email || !config.smtp.host)
+/**
+ * @description: 是否到期该发
+ *  - 需要至少一个投递目标：邮件（email + smtp.host）或**远程接入渠道**（调用方用 `channelReady` 告知）
+ *  - 首次 lastSentAt=0 时，窗口内立即到期，窗口外等下一个窗口；日历/定点模式到点即发，忽略窗口
+ */
+export function isDue(config: SubscriptionConfig, now = Date.now(), opts: { channelReady?: boolean } = {}): boolean {
+  if (!config.enabled)
+    return false
+  const hasEmail = !!config.email && !!config.smtp.host
+  if (!hasEmail && !opts.channelReady)
     return false
   // 时间窗口只约束「按间隔」模式；每天/每周/每月定点都忽略窗口
   if (!isCalendarMode(config) && !inWindow(config, now))

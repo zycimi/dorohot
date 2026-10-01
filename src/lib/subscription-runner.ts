@@ -5,7 +5,7 @@
  */
 import { HOT_ITEMS } from '@/enums'
 import { buildBriefing, collectSources } from '@/lib/ai'
-import { formatChannelDigest, sendToChannels, subscriptionChannelIds } from '@/lib/channels'
+import { channelLabel, formatChannelDigest, sendToChannels, subscriptionChannelIds } from '@/lib/channels'
 import { sendMail } from '@/lib/mailer'
 import { writeSubscription } from '@/lib/subscription'
 
@@ -159,4 +159,36 @@ export async function sendSubscriptionEmail(config: SubscriptionConfig, options:
   }
 
   return { ...content, sentAt: ts, subject }
+}
+
+/**
+ * @description: 只推送到远程接入渠道（用于「未配置邮箱、只推群机器人」的定时场景）
+ *  - 与邮件路径共用内容构建；成功后写回 lastSentAt / lastStatus
+ */
+export async function sendSubscriptionToChannels(config: SubscriptionConfig, options: { test?: boolean } = {}) {
+  const content = await buildSubscriptionContent(config)
+  const ts = Date.now()
+  const test = !!options.test
+  const ids = subscriptionChannelIds()
+  if (!ids.length)
+    throw new Error('没有启用「随订阅推送」的远程渠道')
+
+  const text = formatChannelDigest(
+    content.sources.map(s => ({ label: s.label, items: s.items })),
+    content.analysis,
+    ts,
+    { test, titlesOnly: true },
+  )
+  const results = await sendToChannels(text, ids)
+  const ok = results.filter(r => r.ok).length
+
+  if (ok) {
+    writeSubscription({ lastSentAt: ts, lastStatus: `已推送 ${ok}/${results.length} 个渠道 · ${formatDateTime(ts)} · ${content.usedItems} 条` })
+  }
+  else {
+    const detail = results.map(r => `${channelLabel(r.id)}(${r.error ?? '失败'})`).join('；')
+    writeSubscription({ lastStatus: `渠道推送失败 · ${detail.slice(0, 180)}` })
+  }
+
+  return { ...content, sentAt: ts, results }
 }

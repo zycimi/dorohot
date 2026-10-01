@@ -3,8 +3,9 @@
  *  - 由 src/instrumentation.ts 在服务启动时注册；`/api/subscription` GET 也会兜底启动
  *  - 单进程内用 running 旗标防重入；发完写回 lastSentAt，不会重复发送
  */
+import { subscriptionChannelIds } from './channels'
 import { isDue, readSubscription, writeSubscription } from './subscription'
-import { sendSubscriptionEmail } from './subscription-runner'
+import { sendSubscriptionEmail, sendSubscriptionToChannels } from './subscription-runner'
 
 let timer: ReturnType<typeof setInterval> | null = null
 let running = false
@@ -13,12 +14,22 @@ async function tick() {
   if (running)
     return
   const config = readSubscription()
-  if (!isDue(config))
+  const channelIds = subscriptionChannelIds()
+  if (!isDue(config, Date.now(), { channelReady: channelIds.length > 0 }))
     return
   running = true
   try {
-    const result = await sendSubscriptionEmail(config)
-    console.log(`[subscription] 已发送订阅邮件：${result.usedItems} 条`)
+    const hasEmail = !!config.email && !!config.smtp.host
+    if (hasEmail) {
+      const result = await sendSubscriptionEmail(config)
+      console.log(`[subscription] 已发送订阅邮件：${result.usedItems} 条（附带渠道 ${channelIds.length} 个）`)
+    }
+    else {
+      // 未配置邮箱：只推送到「随订阅推送」的远程接入渠道
+      const result = await sendSubscriptionToChannels(config)
+      const ok = result.results.filter(r => r.ok).length
+      console.log(`[subscription] 未配置邮箱，已推送远程渠道 ${ok}/${result.results.length} 个 · ${result.usedItems} 条`)
+    }
   }
   catch (error) {
     const message = error instanceof Error ? error.message : String(error)

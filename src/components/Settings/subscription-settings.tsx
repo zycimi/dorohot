@@ -368,7 +368,7 @@ export function SubscriptionSettings({ notify }: { notify: Notify }) {
 
       {form.enabled && (!form.email || !form.host) && (
         <div className="ai-warn ai-sub-todo">
-          还不能发信，先补齐：
+          邮箱还没配齐，到点时不会发邮件；若已在「远程接入」里开启「随邮件订阅推送」，仍会推送热榜到群机器人。补齐后即可发信：
           {!form.email && (
             <button type="button" className="ai-btn ghost mini" onClick={() => aiRef.current?.focus()}>
               ① 收件邮箱（用上面一句话设置）
