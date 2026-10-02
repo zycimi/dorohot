@@ -5,7 +5,7 @@
  */
 'use client'
 
-import { CloudCheck, Pencil, TrashBin } from '@gravity-ui/icons'
+import { Check, CirclePlus, CloudCheck, Pencil, TrashBin } from '@gravity-ui/icons'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { post } from '@/lib/ai-client'
@@ -13,6 +13,11 @@ import { post } from '@/lib/ai-client'
 import type { AiConfig, ApiTypeOption, ModelsResult, Notify, SettingKey, TestResult } from '@/lib/ai-client'
 
 const NAME_PRESETS = ['DeepSeek']
+/** 供应商卡片头像：取名字首字符，空名回退为问号 */
+function providerInitial(name: string) {
+  const trimmed = name.trim()
+  return trimmed ? trimmed.slice(0, 1).toUpperCase() : '?'
+}
 const MODEL_MODES_FALLBACK = [
   { value: 'text', label: '文本' },
   { value: 'image', label: '图片' },
@@ -32,8 +37,7 @@ export function ModelSettings({ config, notify, onSaved }: { config: AiConfig | 
   const [model, setModel] = useState('')
   const [modelModes, setModelModes] = useState<string[]>(['text'])
   const [editingModel, setEditingModel] = useState(false)
-  const [pickerOpen, setPickerOpen] = useState(false)
-  const pickerRef = useRef<HTMLDivElement>(null)
+  const nameRef = useRef<HTMLInputElement>(null)
   const [saving, setSaving] = useState(false)
   const [testing, setTesting] = useState(false)
   const [fetchingModels, setFetchingModels] = useState(false)
@@ -100,27 +104,6 @@ export function ModelSettings({ config, notify, onSaved }: { config: AiConfig | 
     }
   }
 
-  // 下拉的关闭兜底：点击下拉与输入框之外的任何位置、或按 Esc 都收起
-  // （只靠输入框 onBlur 不够：某些点击目标不会让输入框失焦）
-  useEffect(() => {
-    if (!pickerOpen)
-      return
-    const onDocMouseDown = (event: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node))
-        setPickerOpen(false)
-    }
-    const onDocKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape')
-        setPickerOpen(false)
-    }
-    document.addEventListener('mousedown', onDocMouseDown)
-    document.addEventListener('keydown', onDocKeyDown)
-    return () => {
-      document.removeEventListener('mousedown', onDocMouseDown)
-      document.removeEventListener('keydown', onDocKeyDown)
-    }
-  }, [pickerOpen])
-
   // 选中已有供应商 → 切换为当前使用，并把表单回填成它的设置
   const switchProvider = async (target: string) => {
     try {
@@ -159,8 +142,9 @@ export function ModelSettings({ config, notify, onSaved }: { config: AiConfig | 
     setModel('')
     setModelModes(['text'])
     setEditingModel(false)
-    setPickerOpen(false)
     notify('已重置为空白，填好后点「保存供应商」')
+    // 清空后把焦点送回名字输入框，方便直接敲新供应商名
+    window.setTimeout(() => nameRef.current?.focus(), 0)
   }
 
   // 清除当前模型（连带模式复位）
@@ -236,6 +220,23 @@ export function ModelSettings({ config, notify, onSaved }: { config: AiConfig | 
   const dirty = !!initialForm.current
     && JSON.stringify({ name, baseUrl, headers, apiType, apiKey, model, modelModes }) !== initialForm.current
 
+  // 卡片点击：切换到该供应商。点当前供应商时表单已对应它，无需动作。
+  const selectProvider = (target: string) => {
+    if (!config || target === config.active)
+      return
+    if (dirty && !window.confirm('当前有未保存的修改，切换供应商会丢弃这些改动。继续切换？'))
+      return
+    void switchProvider(target)
+  }
+
+  // 表单里输入的名字若尚未保存，卡片区就显示一张「草稿」占位卡
+  const pendingNewName = (() => {
+    const trimmed = name.trim()
+    if (!trimmed)
+      return ''
+    return (config?.providers ?? []).some(item => item.name === trimmed) ? '' : trimmed
+  })()
+
   const modeOptions = config?.modelModeOptions?.length ? config.modelModeOptions : MODEL_MODES_FALLBACK
   const modeLabel = modelModes
     .map(value => modeOptions.find(m => m.value === value)?.label || value)
@@ -271,45 +272,71 @@ export function ModelSettings({ config, notify, onSaved }: { config: AiConfig | 
         七项均可自由填写，支持各类兼容网关。API 类型决定端点路径与鉴权方式，保存后建议点一次「测试连接」验证。
       </div>
 
+      {/* 供应商卡片：一张卡一个供应商，末位是「添加供应商」。点卡片即切换/回填表单 */}
+      <div className="ms-sec">切换供应商</div>
+      <div className="ms-providers">
+        {(config?.providers ?? []).map(item => {
+          const isActive = item.name === config?.active
+          return (
+            <button
+              key={item.name}
+              type="button"
+              className={`ms-provider${isActive ? ' on' : ''}`}
+              onClick={() => selectProvider(item.name)}
+              title={isActive ? `${item.name}（当前生效）` : `切换到「${item.name}」`}
+              aria-pressed={isActive}
+            >
+              <span className="ms-provider-avatar" aria-hidden="true">{providerInitial(item.name)}</span>
+              <span className="ms-provider-body">
+                <span className="ms-provider-name">{item.name}</span>
+                <span className="ms-provider-model">{item.model || '未设置模型'}</span>
+              </span>
+              {!item.hasApiKey && <span className="ms-provider-tag warn">未配 Key</span>}
+              {isActive && (
+                <span className="ms-provider-check" title="当前生效" aria-hidden="true">
+                  <Check width={13} height={13} />
+                </span>
+              )}
+            </button>
+          )
+        })}
+
+        {pendingNewName && (
+          <div className="ms-provider pending" title="新供应商，保存后生效">
+            <span className="ms-provider-avatar" aria-hidden="true">{providerInitial(pendingNewName)}</span>
+            <span className="ms-provider-body">
+              <span className="ms-provider-name">{pendingNewName}</span>
+              <span className="ms-provider-model">未保存</span>
+            </span>
+            <span className="ms-provider-tag">草稿</span>
+          </div>
+        )}
+
+        <button
+          type="button"
+          className="ms-provider add"
+          onClick={addProvider}
+          title="清空表单，配置一个新供应商（API 类型保留）"
+        >
+          <CirclePlus width={15} height={15} aria-hidden="true" />
+          <span>添加供应商</span>
+        </button>
+      </div>
+
       {/* 两行共用一个 grid（而非两个），列宽完全一致 → Base URL 与对话模型的输入框左边缘与宽度都严格对齐 */}
       <div className="ms-sec">连接</div>
       <div className="ai-grid">
         <div className="ai-field">
           <label htmlFor="ai-name">供应商名字</label>
-          {/* 用自绘下拉而非原生 datalist：原生下拉宽度由浏览器决定、会超出表单，这里限制为字段宽度并省略超长名字 */}
-          <div ref={pickerRef} className="ai-picker-wrap">
-            <input
-              id="ai-name"
-              type="text"
-              value={name}
-              onChange={e => handleNameChange(e.target.value)}
-              onFocus={() => setPickerOpen(true)}
-              onBlur={() => setPickerOpen(false)}
-              onKeyDown={e => { if (e.key === 'Escape') setPickerOpen(false) }}
-              placeholder="选已有供应商，或输入新名字"
-            />
-            {pickerOpen && (config?.providers?.length ?? 0) > 0 && (
-              <div className="ai-picker">
-                {(config?.providers ?? []).map(item => (
-                  <button
-                    key={item.name}
-                    type="button"
-                    className={`ai-picker-item ${item.name === config?.active ? 'on' : ''}`}
-                    title={item.name}
-                    // 阻止默认行为以保持输入框焦点，避免 blur 先把下拉关掉
-                    onMouseDown={e => e.preventDefault()}
-                    onClick={() => {
-                      setPickerOpen(false)
-                      if (item.name !== config?.active)
-                        void switchProvider(item.name)
-                    }}
-                  >
-                    {item.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* 选择供应商改由上方卡片承担，这里只负责命名新供应商 / 重命名 */}
+          <input
+            ref={nameRef}
+            id="ai-name"
+            type="text"
+            value={name}
+            onChange={e => handleNameChange(e.target.value)}
+            placeholder="点上方卡片选择，或输入新名字"
+          />
           {sourceHint('name')}
         </div>
 
@@ -474,30 +501,14 @@ export function ModelSettings({ config, notify, onSaved }: { config: AiConfig | 
       )}
 
       <div className="ai-opts">
-        <button type="button" className="ai-btn" onClick={addProvider} title="清空表单，配置一个新供应商（API 类型保留）">
-          添加供应商
-        </button>
         <button
           type="button"
-          className="ai-btn danger"
+          className="ai-btn ms-btn-blue"
           onClick={() => void removeProvider()}
           disabled={deletingProvider || !canDeleteProvider}
           title={canDeleteProvider ? `从配置文件中删除供应商「${name}」` : '当前不是已保存的供应商，无法删除'}
         >
           {deletingProvider ? '删除中…' : '删除供应商'}
-        </button>
-        <button
-          type="button"
-          className="ai-btn"
-          onClick={() => {
-            setName(config?.defaults.name ?? 'DeepSeek')
-            setBaseUrl(config?.defaults.baseUrl ?? '')
-            setModel(config?.defaults.model ?? '')
-            setModelModes(['text'])
-            setApiType('chat-completions')
-          }}
-        >
-          恢复默认值
         </button>
         <button type="button" className="ai-btn primary" onClick={save} disabled={saving}>
           {saving ? '保存中…' : '保存供应商'}

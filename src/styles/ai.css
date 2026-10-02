@@ -757,6 +757,105 @@ body.nav-auto-hidden .source-nav-right { transform: translate(160%, -50%); }
 .model-settings .ai-btn:active:not(:disabled),
 .model-settings .ai-icon-btn:active:not(:disabled) { transform: translateY(1px); }
 
+/* 供应商卡片：一卡一供应商，末位是「添加供应商」 */
+.model-settings .ms-providers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(152px, 1fr));
+  gap: 8px;
+  margin: 4px 0 2px;
+}
+.model-settings .ms-provider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 9px;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-secondary);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+.model-settings .ms-provider:hover:not(.pending) { border-color: color-mix(in oklab, var(--accent) 45%, var(--border)); }
+.model-settings .ms-provider:active:not(.pending) { transform: translateY(1px); }
+/* 当前生效的供应商：强调边框 + 淡色底 + 对勾 */
+.model-settings .ms-provider.on {
+  border-color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 10%, var(--surface-secondary));
+}
+.model-settings .ms-provider-avatar {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+}
+.model-settings .ms-provider-body { display: flex; flex-direction: column; gap: 1px; flex: 1 1 auto; min-width: 0; }
+.model-settings .ms-provider-name { font-size: 12px; line-height: 1.25; font-weight: 600; color: var(--foreground); }
+.model-settings .ms-provider-name,
+.model-settings .ms-provider-model { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.model-settings .ms-provider-model { font-size: 10px; line-height: 1.25; color: var(--muted); }
+.model-settings .ms-provider-check { flex: none; display: inline-flex; color: var(--accent); }
+.model-settings .ms-provider-tag {
+  flex: none;
+  font-size: 10px;
+  line-height: 1.7;
+  padding: 0 6px;
+  border-radius: 999px;
+  color: var(--muted);
+  background: color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+/* 语义标签：底色取语义色低透明度，文字与前景色混合 → 亮/暗都可读 */
+.model-settings .ms-provider-tag.warn {
+  color: color-mix(in oklab, var(--warning) 60%, var(--foreground));
+  background: color-mix(in oklab, var(--warning) 22%, transparent);
+}
+.model-settings .ms-provider:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--accent) 55%, transparent);
+  outline-offset: 2px;
+}
+/* 草稿卡（表单里未保存的新供应商）：虚线，不可点击 */
+.model-settings .ms-provider.pending { border-style: dashed; cursor: default; }
+/* 「添加供应商」卡：虚线 + 居中图标，与已有供应商视觉区分 */
+.model-settings .ms-provider.add {
+  justify-content: center;
+  gap: 6px;
+  border-style: dashed;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+.model-settings .ms-provider.add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 6%, transparent);
+}
+/* 「删除供应商」按钮：浅蓝底（用户指定配色，非语义色） */
+.model-settings .ms-btn-blue {
+  background: #e7f0fe;
+  border-color: #bcd6f7;
+  color: #1a5fb4;
+}
+.model-settings .ms-btn-blue:hover:not(:disabled) { background: #dbe9fd; }
+.dark .model-settings .ms-btn-blue {
+  background: color-mix(in oklab, #4c9aff 18%, transparent);
+  border-color: color-mix(in oklab, #4c9aff 42%, transparent);
+  color: #9cc4ff;
+}
+.dark .model-settings .ms-btn-blue:hover:not(:disabled) { background: color-mix(in oklab, #4c9aff 26%, transparent); }
+@media (prefers-reduced-motion: reduce) {
+  .model-settings .ms-provider { transition: none; }
+}
+
 /* ---- /settings · 远程接入（飞书 / 钉钉 / 企业微信群机器人） ---- */
 .channels-settings .ch-push { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 4px 0 14px; }
 .channels-settings .ch-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--surface-secondary); margin-top: 12px; }
