@@ -10,8 +10,8 @@ import { Gear, Shield } from '@gravity-ui/icons'
 import { Button, Description, Tooltip } from '@heroui/react'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useLayoutEffect, useRef } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import HistoryToday from '@/components/HistoryToday'
 import HotSettings from '@/components/HotSettings'
@@ -21,7 +21,25 @@ import { useNavAutoHide } from '@/hooks/use-nav-auto-hide'
 
 export default function Header() {
   const router = useRouter()
+  const pathname = usePathname()
   const headerRef = useRef<HTMLDivElement>(null)
+
+  /**
+   * 管理后台图标的登录态着色：未登录=红、已登录=绿。
+   * 登录/登出是客户端跳转（router.replace + refresh），Header 组件实例不会重挂，
+   * 所以按 pathname 变化复查一次，避免登出后 /login 页仍显示绿色。
+   * `null` 表示还没查到（保持默认色，避免先闪一个错误颜色）。
+   */
+  const [authed, setAuthed] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    let alive = true
+    fetch('/api/auth/session', { cache: 'no-store' })
+      .then(r => r.json())
+      .then((j) => { if (alive) setAuthed(!!j?.data?.authenticated) })
+      .catch(() => { if (alive) setAuthed(false) })
+    return () => { alive = false }
+  }, [pathname])
 
   // 滚动隐藏：全局唯一的 scroll 监听（见 use-nav-auto-hide 的说明）
   useNavAutoHide()
@@ -99,7 +117,7 @@ export default function Header() {
             主题切换
           </Tooltip.Content>
         </Tooltip>
-        {/* 管理后台（首页公开；此处入口，未登录会跳登录页） */}
+        {/* 管理后台（首页公开；此处入口，未登录会跳登录页）。图标按登录态着色：绿=已登录、红=未登录 */}
         <Tooltip delay={0}>
           <Button
             aria-label="管理后台"
@@ -108,7 +126,7 @@ export default function Header() {
             isIconOnly
             onPress={() => router.push('/admin')}
           >
-            <Shield />
+            <Shield className={authed === null ? undefined : authed ? 'text-success' : 'text-danger'} />
           </Button>
           <Tooltip.Content showArrow>
             <Tooltip.Arrow />
